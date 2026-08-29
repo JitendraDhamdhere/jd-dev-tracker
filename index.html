@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevTrack Pro - Developer Productivity Dashboard</title>
+  <link rel="icon" type="image/png" href="assets/icons/favicon.png">
+  
+  <!-- Icon and Font CDNs -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom Style Sheets -->
+  <link rel="stylesheet" href="css/style.css?v=2">
+  <link rel="stylesheet" href="css/components.css?v=2">
+  <link rel="stylesheet" href="css/dashboard.css?v=2">
+  <link rel="stylesheet" href="css/routine.css?v=2">
+  <link rel="stylesheet" href="css/animations.css?v=2">
+  <link rel="stylesheet" href="css/responsive.css?v=2">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Quick inline precheck to avoid dashboard flicker if already authenticated -->
+  <script>
+    (function() {
+      const loggedIn = sessionStorage.getItem('devtrack_logged_in') === 'true';
+      if (loggedIn) {
+        document.documentElement.classList.add('logged-in');
+      }
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Login Screen Overlay -->
+  <div id="login-screen">
+    <div class="login-bg-glow glow-1"></div>
+    <div class="login-bg-glow glow-2"></div>
+    
+    <div class="login-card glass-card">
+      <div class="login-header">
+        <div class="login-logo">
+          <i class="fas fa-terminal"></i>
+          <span>DevTrack Pro</span>
+        </div>
+        <h2>Welcome Back</h2>
+        <p>Enter your credentials to access your productivity dashboard</p>
+      </div>
+      
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-username">Username</label>
+          <div class="input-icon-wrapper">
+            <i class="fas fa-user input-icon"></i>
+            <input type="text" id="login-username" class="form-control" placeholder="Enter username" required autocomplete="username">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <div class="input-icon-wrapper">
+            <i class="fas fa-lock input-icon"></i>
+            <input type="password" id="login-password" class="form-control" placeholder="Enter password" required autocomplete="current-password">
+          </div>
+        </div>
+        
+        <div id="login-error" class="login-error-msg" style="display: none;">
+          <i class="fas fa-exclamation-circle"></i> Invalid username or password.
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-block">
+          <i class="fas fa-sign-in-alt"></i> Sign In
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div id="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo">
+          <i class="fas fa-terminal"></i>
+          <span>DevTrack Pro</span>
+        </div>
+      </div>
+      
+      <ul class="sidebar-menu">
+        <li class="sidebar-item">
+          <a class="sidebar-link active" data-target="dashboard">
+            <i class="fas fa-chart-line"></i> Dashboard
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link" data-target="study">
+            <i class="fas fa-graduation-cap"></i> Daily Study
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link" data-target="routine">
+            <i class="fas fa-calendar-check"></i> Daily Routine
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link" data-target="daily-planner">
+            <i class="fas fa-calendar-day"></i> Daily Planner
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link" data-target="habits">
+            <i class="fas fa-check-double"></i> Habit Tracker
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link" data-target="notes">
+            <i class="fas fa-sticky-note"></i> Notes
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link" data-target="tasks">
+            <i class="fas fa-tasks"></i> Tasks
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link" data-target="roadmap">
+            <i class="fas fa-road"></i> Roadmap
+          </a>
+        </li>
+        
+        <li class="sidebar-item" style="height:1px; background-color:rgba(255,255,255,0.06); margin:12px 16px;"></li>
+        
+        <li class="sidebar-item">
+          <a class="sidebar-link" data-target="java-tracker">
+            <i class="fab fa-java"></i> Java Tracker
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link" data-target="springboot-tracker">
+            <i class="fas fa-leaf"></i> Spring Boot Tracker
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link" data-target="mysql-tracker">
+            <i class="fas fa-database"></i> MySQL Tracker
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link" data-target="dsa-tracker">
+            <i class="fas fa-code-branch"></i> DSA Tracker
+          </a>
+        </li>
+        
+        <li class="sidebar-item" style="height:1px; background-color:rgba(255,255,255,0.06); margin:12px 16px;"></li>
+        
+        <li class="sidebar-item">
+          <a class="sidebar-link" data-target="projects">
+            <i class="fas fa-folder-open"></i> Projects
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link" data-target="interviews">
+            <i class="far fa-comments"></i> Interview Prep
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link" data-target="jobs">
+            <i class="fas fa-briefcase"></i> Job Applications
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link" data-target="certifications">
+            <i class="fas fa-award"></i> Certifications
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link" data-target="analytics">
+            <i class="fas fa-chart-pie"></i> Analytics
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link" data-target="settings">
+            <i class="fas fa-cog"></i> Settings
+          </a>
+        </li>
+      </ul>
+      
+      <div class="sidebar-footer">
+        <div class="profile-avatar">JD</div>
+        <div class="profile-info">
+          <span class="profile-name">Jitendra Dhamdhere</span>
+          <span class="profile-role">Java Backend Developer</span>
+        </div>
+      </div>
+    </aside>
+    
+    <!-- Main Content Area -->
+    <main id="main-content">
+      
+      <!-- Sticky Header -->
+      <header id="header">
+        <div class="header-left">
+          <button id="sidebar-toggle" class="menu-toggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <h1 class="page-title">Dashboard</h1>
+        </div>
+        
+        <div class="header-right">
+          <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="global-search-input" class="search-input" placeholder="Search notes, tasks, jobs...">
+          </div>
+          
+          <div class="header-actions">
+            <button id="theme-toggle-btn" class="header-btn" title="Toggle Light/Dark Theme">
+              <i class="fas fa-sun"></i>
+            </button>
+            <button class="header-btn" onclick="App.navigateToTab('study')" title="Quick Timer">
+              <i class="far fa-clock"></i>
+            </button>
+            <button id="logout-btn" class="header-btn" title="Sign Out">
+              <i class="fas fa-sign-out-alt"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Dashboard Tab -->
+      <section id="view-dashboard" class="view-panel active-view anim-fade-in">
+        <!-- Streak, Study, Tasks, Job Hunt KPIs -->
+        <div class="metrics-grid">
+          <div class="metric-card glass-card metric-streak">
+            <div class="metric-icon-wrapper"><i class="fas fa-fire"></i></div>
+            <div class="metric-details">
+              <span class="metric-value" id="dash-streak-val">12 Days</span>
+              <span class="metric-label">Current Study Streak</span>
+            </div>
+          </div>
+          <div class="metric-card glass-card">
+            <div class="metric-icon-wrapper"><i class="far fa-clock"></i></div>
+            <div class="metric-details">
+              <span class="metric-value" id="dash-study-today">2.5 hrs</span>
+              <span class="metric-label">Study Hours Today</span>
+            </div>
+          </div>
+          <div class="metric-card glass-card metric-tasks">
+            <div class="metric-icon-wrapper"><i class="fas fa-check-circle"></i></div>
+            <div class="metric-details">
+              <span class="metric-value" id="dash-tasks-completed">3</span>
+              <span class="metric-label">Tasks Done (<span id="dash-tasks-pending">1</span> left)</span>
+            </div>
+          </div>
+          <div class="metric-card glass-card metric-jobs">
+            <div class="metric-icon-wrapper"><i class="fas fa-briefcase"></i></div>
+            <div class="metric-details">
+              <span class="metric-value" id="dash-jobs-applied">4</span>
+              <span class="metric-label">Jobs Applied (<span id="dash-interviews">2</span> interviews)</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="dashboard-layout-grid">
+          <div class="glass-card" style="grid-column:1 / -1; margin-bottom:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+              <div>
+                <h3 class="chart-title">Daily Routine</h3>
+                <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Consistency over your fixed Monday–Friday system.</div>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="App.navigateToTab('routine')"><i class="fas fa-arrow-right"></i> View Daily Routine</button>
+            </div>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:16px; margin-top:18px;">
+              <div class="metric-card" style="padding:14px; min-height:90px; background: rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:12px;">
+                <div style="font-size:11px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px;">Completion</div>
+                <div style="font-size:26px; font-weight:800; font-family:var(--font-heading);" id="dashboard-routine-percent">0%</div>
+              </div>
+              <div class="metric-card" style="padding:14px; min-height:90px; background: rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:12px;">
+                <div style="font-size:11px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px;">Completed</div>
+                <div style="font-size:26px; font-weight:800; font-family:var(--font-heading);" id="dashboard-routine-completed">0</div>
+              </div>
+              <div class="metric-card" style="padding:14px; min-height:90px; background: rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:12px;">
+                <div style="font-size:11px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px;">Pending</div>
+                <div style="font-size:26px; font-weight:800; font-family:var(--font-heading);" id="dashboard-routine-pending">0</div>
+              </div>
+              <div class="metric-card" style="padding:14px; min-height:90px; background: rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:12px;">
+                <div style="font-size:11px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px;">Missed</div>
+                <div style="font-size:26px; font-weight:800; font-family:var(--font-heading);" id="dashboard-routine-missed">0</div>
+              </div>
+            </div>
+          </div>
+          <!-- Charts & Progress -->
+          <div class="dashboard-main-col">
+            <div class="charts-grid">
+              <div class="chart-card glass-card">
+                <div class="chart-header">
+                  <h3 class="chart-title">Weekly Study Hours</h3>
+                </div>
+                <div class="chart-container">
+                  <canvas id="chart-weekly-study"></canvas>
+                </div>
+              </div>
+              <div class="chart-card glass-card">
+                <div class="chart-header">
+                  <h3 class="chart-title">Job Application Pipeline</h3>
+                </div>
+                <div class="chart-container">
+                  <canvas id="chart-jobs-pipeline"></canvas>
+                </div>
+              </div>
+            </div>
+            
+            <div class="glass-card">
+              <h3 class="chart-title" style="margin-bottom:20px;">Skill Tracker Summary</h3>
+              <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:20px; text-align:center;">
+                
+                <div class="learning-progress-widget">
+                  <div class="progress-ring-container" id="dash-progress-ring-java">
+                    <svg width="100" height="100">
+                      <circle class="progress-ring-circle" stroke="#1b2336" stroke-width="8" fill="transparent" r="40" cx="50" cy="50"/>
+                      <circle class="progress-ring-circle" stroke="var(--primary)" stroke-width="8" fill="transparent" r="40" cx="50" cy="50"/>
+                    </svg>
+                    <span class="progress-ring-text">0%</span>
+                  </div>
+                  <div style="font-size:12px; font-weight:600;">Java Core</div>
+                </div>
+
+                <div class="learning-progress-widget">
+                  <div class="progress-ring-container" id="dash-progress-ring-spring">
+                    <svg width="100" height="100">
+                      <circle class="progress-ring-circle" stroke="#1b2336" stroke-width="8" fill="transparent" r="40" cx="50" cy="50"/>
+                      <circle class="progress-ring-circle" stroke="var(--secondary)" stroke-width="8" fill="transparent" r="40" cx="50" cy="50"/>
+                    </svg>
+                    <span class="progress-ring-text">0%</span>
+                  </div>
+                  <div style="font-size:12px; font-weight:600;">Spring Boot</div>
+                </div>
+
+                <div class="learning-progress-widget">
+                  <div class="progress-ring-container" id="dash-progress-ring-mysql">
+                    <svg width="100" height="100">
+                      <circle class="progress-ring-circle" stroke="#1b2336" stroke-width="8" fill="transparent" r="40" cx="50" cy="50"/>
+                      <circle class="progress-ring-circle" stroke="var(--info)" stroke-width="8" fill="transparent" r="40" cx="50" cy="50"/>
+                    </svg>
+                    <span class="progress-ring-text">0%</span>
+                  </div>
+                  <div style="font-size:12px; font-weight:600;">MySQL DBMS</div>
+                </div>
+
+                <div class="learning-progress-widget">
+                  <div class="progress-ring-container" id="dash-progress-ring-dsa">
+                    <svg width="100" height="100">
+                      <circle class="progress-ring-circle" stroke="#1b2336" stroke-width="8" fill="transparent" r="40" cx="50" cy="50"/>
+                      <circle class="progress-ring-circle" stroke="var(--success)" stroke-width="8" fill="transparent" r="40" cx="50" cy="50"/>
+                    </svg>
+                    <span class="progress-ring-text">0%</span>
+                  </div>
+                  <div style="font-size:12px; font-weight:600;">DSA Problems</div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          
+          <!-- Side column widgets -->
+          <div class="dashboard-side-col">
+            <div class="glass-card">
+              <h3 class="chart-title" style="margin-bottom:20px;">Goals & Target</h3>
+              <div class="goal-widget" style="margin-bottom:12px;">
+                <div class="goal-info">
+                  <span class="goal-title">Resume Active Version</span>
+                  <span class="goal-subtitle">ATS Optimized Version</span>
+                </div>
+                <span class="badge badge-low" id="dash-resume-ver">v2.1</span>
+              </div>
+              <div class="goal-widget" style="margin-bottom:12px;">
+                <div class="goal-info">
+                  <span class="goal-title">Interviews Prepared</span>
+                  <span class="goal-subtitle">Total rounds scheduled</span>
+                </div>
+                <span class="badge badge-medium" id="dash-offers">0 Offers</span>
+              </div>
+              <div class="goal-widget">
+                <div class="goal-info">
+                  <span class="goal-title">Tasks Overall</span>
+                  <span class="goal-subtitle">Total active database tasks</span>
+                </div>
+                <span class="badge badge-high" id="dash-tasks-total">4 Tasks</span>
+              </div>
+            </div>
+            
+            <div class="glass-card" style="flex-grow:1;">
+              <h3 class="chart-title" style="margin-bottom:20px;">Recent Activity Feed</h3>
+              <div class="feed-widget" id="dash-recent-feed">
+                <!-- Activity list rendering -->
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <footer class="panel-footer">
+          <span>&copy; 2026 DevTrack Pro. Designed for Continuous Learning.</span>
+          <span>Built with HTML, CSS & JavaScript</span>
+        </footer>
+      </section>
+
+      <!-- Daily Routine Tab -->
+      <section id="view-routine" class="view-panel anim-fade-in">
+        <div id="routine-app"></div>
+      </section>
+      
+      <!-- Daily Study Tab -->
+      <section id="view-study" class="view-panel anim-fade-in">
+        <div class="dashboard-layout-grid" style="grid-template-columns: 1fr; gap: 24px;">
+          <!-- Pomodoro card left -->
+          <div class="pomo-timer-card glass-card">
+            <h3 class="chart-title">Focus Pomodoro</h3>
+            <div class="pomo-mode-tabs">
+              <div class="pomo-tab active-tab" id="pomo-mode-work">Work (25m)</div>
+              <div class="pomo-tab" id="pomo-mode-break">Break (5m)</div>
+            </div>
+            
+            <div class="pomo-timer-value" id="pomo-time-display">25:00</div>
+            
+            <div style="display:flex; gap:12px;">
+              <button id="pomo-start" class="btn btn-primary"><i class="fas fa-play"></i> Start</button>
+              <button id="pomo-pause" class="btn btn-warning" style="display:none;"><i class="fas fa-pause"></i> Pause</button>
+              <button id="pomo-reset" class="btn btn-secondary"><i class="fas fa-undo"></i> Reset</button>
+            </div>
+            
+            <div style="margin-top:20px; width:100%; border-top:1px solid var(--border-light); padding-top:20px; display:flex; flex-direction:column; gap:12px;">
+              <div style="font-size:12px; font-weight:600; text-align:left; color:var(--text-secondary);">Custom Timer Setup (minutes)</div>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div class="form-group" style="margin-bottom:0;">
+                  <label style="margin-bottom:4px;">Work</label>
+                  <input type="number" id="pomo-custom-work" class="form-control" style="height:34px; padding:0 8px; text-align:center;" value="25" min="1">
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label style="margin-bottom:4px;">Break</label>
+                  <input type="number" id="pomo-custom-break" class="form-control" style="height:34px; padding:0 8px; text-align:center;" value="5" min="1">
+                </div>
+              </div>
+              <button id="pomo-custom-apply" class="btn btn-secondary btn-sm" style="width:100%;">Configure Custom Timer</button>
+            </div>
+          </div>
+          
+          <!-- Study Logs right -->
+          <div class="glass-card" style="display:flex; flex-direction:column; height:100%;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+              <div>
+                <h3 class="chart-title">Study Sessions Log</h3>
+                <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Total study logged: <span id="study-stats-hours" style="font-weight:700; color:var(--primary);">0h</span> across <span id="study-stats-count" style="font-weight:700; color:var(--secondary);">0</span> entries</div>
+              </div>
+              <button id="btn-add-study-session" class="btn btn-primary"><i class="fas fa-plus"></i> Add Session</button>
+            </div>
+            
+            <div class="study-history-list" id="study-history-list" style="overflow-y:auto; flex-grow:1; max-height:480px; padding-right:6px;">
+              <!-- History rendering -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Daily Planner Tab -->
+      <section id="view-daily-planner" class="view-panel anim-fade-in">
+        <div class="glass-card" style="width:100%;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; border-bottom:1px solid var(--border-light); padding-bottom:16px;">
+            <div>
+              <h3 class="chart-title">Daily Reflection & Planner</h3>
+              <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Plan mornings, log review blocks, and record wins.</div>
+            </div>
+            <button id="btn-save-daily-planner" class="btn btn-primary"><i class="fas fa-save"></i> Save Plan</button>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
+            <div class="form-group">
+              <label>Morning Goals (AM)</label>
+              <textarea id="plan-morning" class="form-control" style="min-height:110px;" placeholder="What are your key metrics today?"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Today's Focus Goals</label>
+              <textarea id="plan-today" class="form-control" style="min-height:110px;" placeholder="Study blocks, coding hours, DSA targets..."></textarea>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;">
+            <div class="form-group">
+              <label>Evening Review (PM)</label>
+              <textarea id="plan-evening" class="form-control" style="min-height:110px;" placeholder="What did you achieve? Did you face blockers?"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Tomorrow's Initial Plan</label>
+              <textarea id="plan-tomorrow" class="form-control" style="min-height:110px;" placeholder="Pre-plan tasks for tomorrow morning."></textarea>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;">
+            <div class="form-group">
+              <label><span style="color:var(--success);"><i class="fas fa-trophy"></i></span> Today's Wins</label>
+              <textarea id="plan-wins" class="form-control" style="min-height:80px;" placeholder="Wins of the day..."></textarea>
+            </div>
+            <div class="form-group">
+              <label><span style="color:var(--danger);"><i class="fas fa-exclamation-triangle"></i></span> Mistakes / Distractions</label>
+              <textarea id="plan-mistakes" class="form-control" style="min-height:80px;" placeholder="What slowed you down?"></textarea>
+            </div>
+            <div class="form-group">
+              <label><span style="color:var(--info);"><i class="fas fa-tools"></i></span> Improvements for Tomorrow</label>
+              <textarea id="plan-improvements" class="form-control" style="min-height:80px;" placeholder="Actions to prevent distractions..."></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Habit Tracker Tab -->
+      <section id="view-habits" class="view-panel anim-fade-in">
+        <div class="glass-card" style="max-width:1000px; margin:0 auto; overflow-x:auto;">
+          <h3 class="chart-title" style="margin-bottom:12px;">Habits Matrix</h3>
+          <p class="text-muted" style="font-size:12px; margin-bottom:24px;">Check off daily habits, track consistency streaks, and develop professional routines.</p>
+          <div id="habits-grid-wrapper">
+            <!-- Habits rendering dynamically -->
+          </div>
+        </div>
+      </section>
+      
+      <!-- Notes Tab -->
+      <section id="view-notes" class="view-panel anim-fade-in" style="padding: 20px;">
+        <div class="notes-container-layout">
+          <!-- Left list pane -->
+          <div class="notes-sidebar-pane">
+            <button id="btn-create-note" class="btn btn-primary" style="width:100%;"><i class="fas fa-plus"></i> New Note</button>
+            
+            <div class="search-container" style="width:100%;">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" id="notes-search" class="search-input" style="width:100%; padding-left:36px;" placeholder="Search notes...">
+            </div>
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+              <select id="notes-filter-category" class="form-select" style="height:36px; padding:0 8px; font-size:12px;">
+                <option value="All">All Categories</option>
+                <option value="Java">Java</option>
+                <option value="Spring">Spring</option>
+                <option value="MySQL">MySQL</option>
+                <option value="Microservices">Microservices</option>
+                <option value="System Design">System Design</option>
+                <option value="Interview">Interview</option>
+                <option value="Projects">Projects</option>
+                <option value="General">General</option>
+                <option value="Archive">Archive</option>
+              </select>
+              <select id="notes-sort-by" class="form-select" style="height:36px; padding:0 8px; font-size:12px;">
+                <option value="modified">Last Modified</option>
+                <option value="created">Created Date</option>
+                <option value="alpha">Alphabetical</option>
+              </select>
+            </div>
+            
+            <div class="notes-sidebar-list" id="notes-sidebar-list">
+              <!-- Notes checklist items -->
+            </div>
+
+            <div style="display:flex; justify-content:space-between; border-top:1px solid var(--border-light); padding-top:10px;">
+              <button id="notes-export" class="btn btn-secondary btn-sm" style="font-size:11px; padding:6px 10px;"><i class="fas fa-download"></i> Export JSON</button>
+              <label for="notes-import-input" class="btn btn-secondary btn-sm" style="font-size:11px; padding:6px 10px; cursor:pointer;">
+                <i class="fas fa-upload"></i> Import JSON
+              </label>
+              <input type="file" id="notes-import-input" accept=".json" style="display:none;">
+            </div>
+          </div>
+          
+          <!-- Right editor pane -->
+          <div class="notes-editor-pane" id="notes-editor-pane">
+            <div class="note-editor-header">
+              <div class="note-save-indicator" id="note-save-status">
+                <i class="fas fa-check"></i> Saved
+              </div>
+              <div class="note-editor-actions">
+                <div class="note-write-preview-toggle">
+                  <div class="pomo-tab active-tab" id="note-tab-write">Write</div>
+                  <div class="pomo-tab" id="note-tab-preview">Preview (Markdown)</div>
+                </div>
+                
+                <div style="width:1px; height:24px; background-color:var(--border-color); margin:0 8px;"></div>
+                
+                <button id="note-action-pin" class="note-editor-btn" title="Pin Note"><i class="fas fa-thumbtack"></i></button>
+                <button id="note-action-fav" class="note-editor-btn" title="Favorite"><i class="far fa-star"></i></button>
+                <button id="note-action-archive" class="note-editor-btn" title="Archive"><i class="fas fa-archive"></i></button>
+                <button id="note-action-duplicate" class="note-editor-btn" title="Duplicate"><i class="far fa-copy"></i></button>
+                <button id="note-action-delete" class="note-editor-btn" style="color:var(--danger);" title="Delete Note"><i class="fas fa-trash-alt"></i></button>
+              </div>
+            </div>
+
+            <div class="note-editor-inputs">
+              <input type="text" id="note-title-input" class="form-control" style="background:none; border:none; border-bottom:1px solid var(--border-light); font-size:18px; font-weight:700;" placeholder="Title">
+              
+              <select id="note-category-select" class="form-select" style="height:36px; font-size:12px;">
+                <option value="General">General</option>
+                <option value="Java">Java Core</option>
+                <option value="Spring">Spring Boot</option>
+                <option value="MySQL">MySQL DBMS</option>
+                <option value="Microservices">Microservices</option>
+                <option value="System Design">System Design</option>
+                <option value="Interview">Interview</option>
+                <option value="Projects">Projects</option>
+              </select>
+
+              <input type="text" id="note-tags-input" class="form-control" style="height:36px; font-size:12px;" placeholder="tags (comma separated)">
+              
+              <select id="note-color-select" class="form-select" style="height:36px; font-size:12px;">
+                <option value="#3b82f6">Blue Accent</option>
+                <option value="#8b5cf6">Purple Accent</option>
+                <option value="#10b981">Green Accent</option>
+                <option value="#f59e0b">Amber Accent</option>
+                <option value="#ef4444">Red Accent</option>
+              </select>
+            </div>
+
+            <div class="note-textarea-container">
+              <textarea id="note-body-editor" class="note-body-textarea" placeholder="Start typing in Markdown... (e.g. # Header, * list, code block)"></textarea>
+              <div id="note-body-preview" class="note-preview-div"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Tasks Tab -->
+      <section id="view-tasks" class="view-panel anim-fade-in" style="padding: 20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+          <div style="display:flex; align-items:center; gap:20px;">
+            <div class="pomo-mode-tabs">
+              <div class="pomo-tab active-tab" id="task-view-board">Kanban Board</div>
+              <div class="pomo-tab" id="task-view-calendar">Calendar View</div>
+            </div>
+            <div class="search-container" style="width:240px;">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" id="task-search" class="search-input" placeholder="Search tasks...">
+            </div>
+            <select id="task-filter-priority" class="form-select" style="height:34px; padding:0 8px; width:130px; font-size:12px;">
+              <option value="All">All Priorities</option>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+            <select id="task-filter-category" class="form-select" style="height:34px; padding:0 8px; width:130px; font-size:12px;">
+              <option value="All">All Categories</option>
+              <option value="Spring Security">Spring Security</option>
+              <option value="Microservices">Microservices</option>
+              <option value="Testing">Testing</option>
+              <option value="Docker">Docker</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Kanban Board view -->
+        <div class="kanban-board" id="tasks-board-view">
+          <div class="kanban-column" data-status="todo">
+            <div class="kanban-column-header">
+              <h4 class="kanban-column-title"><i class="far fa-circle text-muted"></i> TO DO</h4>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="kanban-column-count">0</span>
+                <button class="btn btn-secondary btn-icon btn-sm btn-quick-add-task" data-status="todo"><i class="fas fa-plus"></i></button>
+              </div>
+            </div>
+            <div class="kanban-task-list" id="kanban-list-todo"></div>
+          </div>
+          
+          <div class="kanban-column" data-status="in_progress">
+            <div class="kanban-column-header">
+              <h4 class="kanban-column-title"><i class="fas fa-spinner text-primary"></i> IN PROGRESS</h4>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="kanban-column-count">0</span>
+                <button class="btn btn-secondary btn-icon btn-sm btn-quick-add-task" data-status="in_progress"><i class="fas fa-plus"></i></button>
+              </div>
+            </div>
+            <div class="kanban-task-list" id="kanban-list-in_progress"></div>
+          </div>
+
+          <div class="kanban-column" data-status="testing">
+            <div class="kanban-column-header">
+              <h4 class="kanban-column-title"><i class="fas fa-flask text-info"></i> TESTING</h4>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="kanban-column-count">0</span>
+                <button class="btn btn-secondary btn-icon btn-sm btn-quick-add-task" data-status="testing"><i class="fas fa-plus"></i></button>
+              </div>
+            </div>
+            <div class="kanban-task-list" id="kanban-list-testing"></div>
+          </div>
+
+          <div class="kanban-column" data-status="completed">
+            <div class="kanban-column-header">
+              <h4 class="kanban-column-title"><i class="fas fa-check-circle text-success"></i> COMPLETED</h4>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="kanban-column-count">0</span>
+                <button class="btn btn-secondary btn-icon btn-sm btn-quick-add-task" data-status="completed"><i class="fas fa-plus"></i></button>
+              </div>
+            </div>
+            <div class="kanban-task-list" id="kanban-list-completed"></div>
+          </div>
+        </div>
+
+        <!-- Calendar Month view -->
+        <div id="tasks-calendar-view" style="display:none;" class="calendar-container">
+          <div class="calendar-header">
+            <button class="calendar-nav-btn" id="cal-prev-month"><i class="fas fa-chevron-left"></i> Prev</button>
+            <h3 class="calendar-month-title" id="cal-month-title">July 2026</h3>
+            <button class="calendar-nav-btn" id="cal-next-month">Next <i class="fas fa-chevron-right"></i></button>
+          </div>
+          
+          <div class="calendar-weekdays">
+            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+          </div>
+          <div class="calendar-grid" id="tasks-calendar-container"></div>
+        </div>
+      </section>
+      
+      <!-- Roadmap Tab -->
+      <section id="view-roadmap" class="view-panel anim-fade-in">
+        <div class="roadmap-timeline-wrapper">
+          <div id="roadmap-progress-stats" style="width:100%; max-width:800px; margin-bottom:28px;"></div>
+          <div class="roadmap-timeline-flow" id="roadmap-timeline-flow" style="width:100%;">
+            <!-- Dynamic steps -->
+          </div>
+        </div>
+      </section>
+      
+      <!-- Java Core Skills Tracker -->
+      <section id="view-java-tracker" class="view-panel anim-fade-in">
+        <div id="java-tracker-container"></div>
+      </section>
+
+      <!-- Spring Boot Tracker -->
+      <section id="view-springboot-tracker" class="view-panel anim-fade-in">
+        <div id="spring-tracker-container"></div>
+      </section>
+
+      <!-- MySQL Tracker -->
+      <section id="view-mysql-tracker" class="view-panel anim-fade-in">
+        <div id="mysql-tracker-container"></div>
+      </section>
+
+      <!-- DSA Tracker -->
+      <section id="view-dsa-tracker" class="view-panel anim-fade-in">
+        <div id="dsa-tracker-container"></div>
+      </section>
+
+      <!-- Projects Tab -->
+      <section id="view-projects" class="view-panel anim-fade-in">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+          <div>
+            <h3 class="chart-title">Developer Portfolio</h3>
+            <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Log, compile, and showcase your development codes repository.</div>
+          </div>
+          <button id="btn-add-project" class="btn btn-primary"><i class="fas fa-plus"></i> Add Project</button>
+        </div>
+
+        <div class="projects-grid-layout" id="projects-list-container">
+          <!-- Projects cards dynamically rendered -->
+        </div>
+      </section>
+
+      <!-- Interview Prep Tab -->
+      <section id="view-interviews" class="view-panel anim-fade-in">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+          <div>
+            <h3 class="chart-title">Interview Schedules & Q&A Log</h3>
+            <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Keep records of technical interview rounds, coding challenges, and HR rounds.</div>
+          </div>
+          <button id="btn-add-interview" class="btn btn-primary"><i class="fas fa-plus"></i> Schedule Round</button>
+        </div>
+
+        <div class="interviews-grid-layout" id="interviews-list-container">
+          <!-- Interviews cards list -->
+        </div>
+      </section>
+
+      <!-- Job applications ATS Tracker Tab -->
+      <section id="view-jobs" class="view-panel anim-fade-in">
+        <div class="jobs-kpis-grid">
+          <div class="metric-card glass-card">
+            <div class="metric-icon-wrapper" style="color:var(--primary);"><i class="far fa-paper-plane"></i></div>
+            <div class="metric-details">
+              <span class="metric-value" id="job-kpi-sent">0</span>
+              <span class="metric-label">Applications Sent</span>
+            </div>
+          </div>
+          <div class="metric-card glass-card">
+            <div class="metric-icon-wrapper" style="color:var(--secondary);"><i class="far fa-comments"></i></div>
+            <div class="metric-details">
+              <span class="metric-value" id="job-kpi-interviews">0</span>
+              <span class="metric-label">Interview Loops</span>
+            </div>
+          </div>
+          <div class="metric-card glass-card">
+            <div class="metric-icon-wrapper" style="color:var(--success);"><i class="fas fa-gift"></i></div>
+            <div class="metric-details">
+              <span class="metric-value" id="job-kpi-offers">0</span>
+              <span class="metric-label">Offers Secured</span>
+            </div>
+          </div>
+          <div class="metric-card glass-card">
+            <div class="metric-icon-wrapper" style="color:var(--danger);"><i class="fas fa-ban"></i></div>
+            <div class="metric-details">
+              <span class="metric-value" id="job-kpi-rejections">0</span>
+              <span class="metric-label">Rejections Met</span>
+            </div>
+          </div>
+          <div class="metric-card glass-card">
+            <div class="metric-icon-wrapper" style="color:var(--info);"><i class="fas fa-percentage"></i></div>
+            <div class="metric-details">
+              <span class="metric-value" id="job-kpi-rate">0%</span>
+              <span class="metric-label">Applied Success Rate</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+          <div style="display:flex; gap:16px; align-items:center;">
+            <div class="search-container" style="width:240px;">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" id="job-search" class="search-input" placeholder="Search companies...">
+            </div>
+            <select id="job-filter-status" class="form-select" style="height:34px; padding:0 8px; width:150px; font-size:12px;">
+              <option value="All">All Statuses</option>
+              <option value="Wishlist">Wishlist</option>
+              <option value="Applied">Applied</option>
+              <option value="Technical Round 1">Technical 1</option>
+              <option value="Technical Round 2">Technical 2</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+            <select id="job-filter-priority" class="form-select" style="height:34px; padding:0 8px; width:150px; font-size:12px;">
+              <option value="All">All Priorities</option>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+          <button id="btn-add-job" class="btn btn-primary"><i class="fas fa-plus"></i> Add Application</button>
+        </div>
+
+        <div class="jobs-grid-layout" id="jobs-grid-container">
+          <!-- Job cards list render -->
+        </div>
+      </section>
+
+      <!-- Certifications Tab -->
+      <section id="view-certifications" class="view-panel anim-fade-in">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+          <div>
+            <h3 class="chart-title">Professional Certifications</h3>
+            <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Manage certificates credentials, provider links, and expiry schedules.</div>
+          </div>
+          <button id="btn-add-cert" class="btn btn-primary"><i class="fas fa-plus"></i> Add Certificate</button>
+        </div>
+
+        <div class="cert-cards-grid" id="certs-list-container">
+          <!-- Certifications cards list -->
+        </div>
+      </section>
+      
+      <!-- Analytics Tab -->
+      <section id="view-analytics" class="view-panel anim-fade-in">
+        <div class="charts-grid">
+          <div class="chart-card glass-card" style="min-height:340px;">
+            <div class="chart-header"><h3 class="chart-title">Monthly Study Hours Trend</h3></div>
+            <div class="chart-container"><canvas id="chart-analytics-study"></canvas></div>
+          </div>
+          
+          <div class="chart-card glass-card" style="min-height:340px;">
+            <div class="chart-header"><h3 class="chart-title">Technology Competency Strength %</h3></div>
+            <div class="chart-container"><canvas id="chart-analytics-tech"></canvas></div>
+          </div>
+        </div>
+
+        <div class="charts-grid" style="margin-top:24px;">
+          <div class="chart-card glass-card" style="min-height:340px;">
+            <div class="chart-header"><h3 class="chart-title">Kanban Task Status Allocations</h3></div>
+            <div class="chart-container"><canvas id="chart-analytics-tasks"></canvas></div>
+          </div>
+          
+          <div class="chart-card glass-card" style="min-height:340px;">
+            <div class="chart-header"><h3 class="chart-title">Job Hunt Funnel Share %</h3></div>
+            <div class="chart-container"><canvas id="chart-analytics-jobs"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Metric summaries rows -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:24px;">
+          <div class="glass-card">
+            <h4 class="chart-title" style="margin-bottom:12px;">Study Hours Averages</h4>
+            <div style="font-size:13px; color:var(--text-secondary); display:flex; justify-content:space-between; margin-bottom:8px;">
+              <span>Average Study session duration</span>
+              <strong id="analytics-avg-session" style="color:var(--primary);">0 mins</strong>
+            </div>
+            <div style="font-size:13px; color:var(--text-secondary); display:flex; justify-content:space-between;">
+              <span>Daily active targets met</span>
+              <strong style="color:var(--success);">82%</strong>
+            </div>
+          </div>
+          
+          <div class="glass-card">
+            <h4 class="chart-title" style="margin-bottom:12px;">Estimation Accuracy</h4>
+            <div style="font-size:13px; color:var(--text-secondary); display:flex; justify-content:space-between; margin-bottom:8px;">
+              <span>Task Estimation Accuracy (Actual vs Estimate)</span>
+              <strong id="analytics-est-accuracy" style="color:var(--secondary);">100%</strong>
+            </div>
+            <div style="font-size:13px; color:var(--text-secondary); display:flex; justify-content:space-between;">
+              <span>Testing success parameters</span>
+              <strong style="color:var(--success);">Pass</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Settings Tab -->
+      <section id="view-settings" class="view-panel anim-fade-in">
+        <div class="settings-grid-cols">
+          <!-- Profile update left -->
+          <div class="glass-card">
+            <h3 class="chart-title" style="margin-bottom:20px;">Profile Settings</h3>
+            <form id="profile-settings-form">
+              <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="set-profile-name" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label>Target Role Title</label>
+                <input type="text" id="set-profile-role" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label>Daily Study Target (hours)</label>
+                <input type="number" id="set-profile-hours" class="form-control" step="0.5" required>
+              </div>
+              <div class="form-group">
+                <label>GitHub Daily Commit Goal</label>
+                <input type="number" id="set-profile-github" class="form-control" required>
+              </div>
+              <button type="submit" class="btn btn-primary" style="width:100%;">Save Profile Settings</button>
+            </form>
+          </div>
+
+          <!-- Resumes manager and Backup restore right -->
+          <div style="display:flex; flex-direction:column; gap:24px;">
+            <!-- Resume list card -->
+            <div class="glass-card">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 class="chart-title">Resume Version Control</h3>
+                <button id="btn-add-resume" class="btn btn-secondary btn-sm"><i class="fas fa-plus"></i> Upload Version</button>
+              </div>
+              <div style="overflow-x:auto;">
+                <table style="width:100%; border-collapse:collapse; font-size:12px; text-align:left;">
+                  <thead>
+                    <tr style="border-bottom:1px solid var(--border-color); color:var(--text-muted); font-weight:600;">
+                      <th style="padding:10px 6px;">Name</th>
+                      <th style="padding:10px 6px;">Version</th>
+                      <th style="padding:10px 6px;">Target Role</th>
+                      <th style="padding:10px 6px;">Company Spec</th>
+                      <th style="padding:10px 6px;">ATS Score</th>
+                      <th style="padding:10px 6px;">Updated</th>
+                      <th style="padding:10px 6px;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="resumes-list-container">
+                    <!-- Resumes render -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Backups restoration card -->
+            <div class="glass-card">
+              <h3 class="chart-title" style="margin-bottom:16px;">Data Backup & Restore</h3>
+              <p class="text-muted" style="font-size:12px; margin-bottom:20px;">Backup everything stored in your Supabase backend or reset data values.</p>
+              
+              <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                <button id="btn-export-backup" class="btn btn-secondary"><i class="fas fa-download"></i> Export Data Backup</button>
+                <label for="input-import-backup" class="btn btn-secondary" style="cursor:pointer;">
+                  <i class="fas fa-upload"></i> Restore Backup
+                </label>
+                <input type="file" id="input-import-backup" accept=".json" style="display:none;">
+                <button id="btn-reset-dashboard" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Reset Dashboard Data</button>
+              </div>
+            </div>
+
+  <!-- Study Session Editor Modal -->
+  <div class="modal-overlay" id="modal-study-session">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modal-session-title">Add Study Session</h4>
+        <button class="modal-close" onclick="App.closeModal('modal-study-session')"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="study-session-form">
+        <div class="modal-body">
+          <input type="hidden" id="session-id">
+          <div class="form-group">
+            <label>Topic Name</label>
+            <input type="text" id="session-topic" class="form-control" placeholder="e.g. Multithreading locks" required>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+            <div class="form-group">
+              <label>Study Category</label>
+              <select id="session-category" class="form-select">
+                <option value="Java">Java</option>
+                <option value="Spring Boot">Spring Boot</option>
+                <option value="Spring Security">Spring Security</option>
+                <option value="Hibernate">Hibernate</option>
+                <option value="JPA">JPA</option>
+                <option value="MySQL">MySQL</option>
+                <option value="REST API">REST API</option>
+                <option value="Microservices">Microservices</option>
+                <option value="Docker">Docker</option>
+                <option value="Git">Git</option>
+                <option value="System Design">System Design</option>
+                <option value="LLD">LLD</option>
+                <option value="HLD">HLD</option>
+                <option value="DSA">DSA</option>
+                <option value="Interview">Interview</option>
+                <option value="Project">Project</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Study Duration (minutes)</label>
+              <input type="number" id="session-duration" class="form-control" placeholder="e.g. 45" required>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px;">
+            <div class="form-group">
+              <label>Difficulty</label>
+              <select id="session-difficulty" class="form-select">
+                <option value="Easy">Easy</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="Hard">Hard</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Priority</label>
+              <select id="session-priority" class="form-select">
+                <option value="Low">Low</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
+            <div class="form-group" style="display:flex; align-items:center; justify-content:center; gap:8px;">
+              <input type="checkbox" id="session-completed" checked style="width:18px; height:18px; cursor:pointer;">
+              <label for="session-completed" style="margin-bottom:0; cursor:pointer;">Completed</label>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+            <div class="form-group">
+              <label>Select Date</label>
+              <input type="date" id="session-date" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Select Time</label>
+              <input type="time" id="session-time" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="session-desc" class="form-control" style="min-height:80px;" placeholder="Wrote codes for..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-study-session')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Session</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Task Editor Modal -->
+  <div class="modal-overlay" id="modal-task-editor">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modal-task-title">Add Task</h4>
+        <button class="modal-close" onclick="App.closeModal('modal-task-editor')"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="task-editor-form">
+        <div class="modal-body">
+          <input type="hidden" id="task-id">
+          <div class="form-group">
+            <label>Task Title</label>
+            <input type="text" id="task-title" class="form-control" placeholder="e.g. Implement JwtTokenUtil" required>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="task-desc" class="form-control" style="min-height:70px;" placeholder="Write task details..."></textarea>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div class="form-group">
+              <label>Priority</label>
+              <select id="task-priority" class="form-select">
+                <option value="Low">Low</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <input type="text" id="task-category" class="form-control" placeholder="e.g. Spring Security" required>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div class="form-group">
+              <label>Board Column Status</label>
+              <select id="task-status" class="form-select">
+                <option value="todo">To Do</option>
+                <option value="in_progress">In Progress</option>
+                <option value="testing">Testing</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Due Date</label>
+              <input type="date" id="task-due" class="form-control" required>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+            <div class="form-group">
+              <label>Est Hours</label>
+              <input type="number" id="task-est" class="form-control" step="0.5" placeholder="e.g. 4">
+            </div>
+            <div class="form-group">
+              <label>Actual Hours</label>
+              <input type="number" id="task-act" class="form-control" step="0.5" placeholder="e.g. 3">
+            </div>
+            <div class="form-group" style="display:flex; align-items:center; justify-content:center; gap:8px;">
+              <input type="checkbox" id="task-reminder" style="width:16px; height:16px; cursor:pointer;">
+              <label for="task-reminder" style="margin-bottom:0; cursor:pointer;">Reminder Alert</label>
+            </div>
+          </div>
+          
+          <!-- Subtasks checklist manager -->
+          <div style="margin-top:10px; border-top:1px solid var(--border-light); padding-top:14px;">
+            <label style="font-size:12px; font-weight:600; color:var(--text-secondary); display:block; margin-bottom:8px;">Sub-Tasks Checklist</label>
+            <div id="modal-subtask-list" style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px; max-height:120px; overflow-y:auto;">
+              <!-- Checklist items list -->
+            </div>
+            <div style="display:flex; gap:10px;">
+              <input type="text" id="new-subtask-input" class="form-control" style="height:36px;" placeholder="Add subtask...">
+              <button type="button" id="btn-add-subtask" class="btn btn-secondary" style="height:36px;"><i class="fas fa-plus"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-task-editor')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Project Editor Modal -->
+  <div class="modal-overlay" id="modal-project-editor">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modal-project-title">Add Portfolio Project</h4>
+        <button class="modal-close" onclick="App.closeModal('modal-project-editor')"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="project-editor-form">
+        <div class="modal-body">
+          <input type="hidden" id="project-id">
+          <div class="form-group">
+            <label>Project Name</label>
+            <input type="text" id="project-name" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="project-desc" class="form-control" style="min-height:60px;" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Technologies Used (comma separated)</label>
+            <input type="text" id="project-tech" class="form-control" placeholder="e.g. Java, Spring, Kafka" required>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div class="form-group">
+              <label>GitHub Repository URL</label>
+              <input type="url" id="project-github" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Live Deployment URL</label>
+              <input type="url" id="project-live" class="form-control">
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+            <div class="form-group">
+              <label>Status</label>
+              <select id="project-status" class="form-select">
+                <option value="Wishlist">Wishlist</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Manual Progress %</label>
+              <input type="number" id="project-progress" class="form-control" min="0" max="100">
+            </div>
+            <div class="form-group">
+              <label>Priority</label>
+              <select id="project-priority" class="form-select">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div class="form-group">
+              <label>Start Date</label>
+              <input type="date" id="project-start" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Target Date</label>
+              <input type="date" id="project-target" class="form-control" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Project Notes</label>
+            <textarea id="project-notes" class="form-control" style="min-height:50px;"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-project-editor')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Project</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Interview Editor Modal -->
+  <div class="modal-overlay" id="modal-interview-editor">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modal-interview-title">Schedule Interview Round</h4>
+        <button class="modal-close" onclick="App.closeModal('modal-interview-editor')"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="interview-editor-form">
+        <div class="modal-body">
+          <input type="hidden" id="interview-id">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div class="form-group">
+              <label>Company Name</label>
+              <input type="text" id="interview-company" class="form-control" placeholder="e.g. Amazon" required>
+            </div>
+            <div class="form-group">
+              <label>Position / Role</label>
+              <input type="text" id="interview-role" class="form-control" placeholder="e.g. SDE 2" required>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div class="form-group">
+              <label>Date</label>
+              <input type="date" id="interview-date" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Time</label>
+              <input type="time" id="interview-time" class="form-control">
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div class="form-group">
+              <label>Interview Round</label>
+              <input type="text" id="interview-round" class="form-control" placeholder="e.g. Technical Round 1" required>
+            </div>
+            <div class="form-group">
+              <label>Interviewer Name</label>
+              <input type="text" id="interview-interviewer" class="form-control">
+            </div>
+          </div>
+          
+          <div style="border-top:1px solid var(--border-light); margin-top:12px; padding-top:12px;">
+            <label style="font-size:12px; font-weight:600; color:var(--text-secondary); display:block; margin-bottom:8px;">Questions Log (Post-Interview)</label>
+            <div class="form-group">
+              <label>Coding / DSA Questions</label>
+              <textarea id="interview-q-coding" class="form-control" style="min-height:40px; font-size:12px;"></textarea>
+            </div>
+            <div class="form-group">
+              <label>System Design / SQL Questions</label>
+              <textarea id="interview-q-system" class="form-control" style="min-height:40px; font-size:12px;"></textarea>
+            </div>
+            <div class="form-group">
+              <label>HR / Core Behavioral Questions</label>
+              <textarea id="interview-q-hr" class="form-control" style="min-height:40px; font-size:12px;"></textarea>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>General Feedback / Notes</label>
+            <textarea id="interview-feedback" class="form-control" style="min-height:50px;"></textarea>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+            <div class="form-group">
+              <label>Status</label>
+              <select id="interview-status" class="form-select">
+                <option value="Scheduled">Scheduled</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Round Result</label>
+              <select id="interview-result" class="form-select">
+                <option value="Pending">Pending</option>
+                <option value="Passed">Passed</option>
+                <option value="Failed">Failed</option>
+              </select>
+            </div>
+            <div class="form-group" style="display:flex; align-items:center; justify-content:center; gap:8px;">
+              <input type="checkbox" id="interview-offer" style="width:16px; height:16px; cursor:pointer;">
+              <label for="interview-offer" style="margin-bottom:0; cursor:pointer;">Offer Received</label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-interview-editor')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Schedule</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Job application Editor Modal -->
+  <div class="modal-overlay" id="modal-job-editor">
+    <div class="modal-container" style="max-width:700px;">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modal-job-title">Add Job Application</h4>
+        <button class="modal-close" onclick="App.closeModal('modal-job-editor')"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="job-editor-form">
+        <div class="modal-body">
+          <input type="hidden" id="job-id">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div class="form-group">
+              <label>Company Name</label>
+              <input type="text" id="job-company" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Role / Position Title</label>
+              <input type="text" id="job-role" class="form-control" required>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+            <div class="form-group">
+              <label>Experience Needed</label>
+              <input type="text" id="job-exp" class="form-control" placeholder="e.g. 2+ YOE">
+            </div>
+            <div class="form-group">
+              <label>Salary Package</label>
+              <input type="text" id="job-salary" class="form-control" placeholder="e.g. $120k">
+            </div>
+            <div class="form-group">
+              <label>Job Location</label>
+              <input type="text" id="job-location" class="form-control" placeholder="e.g. New York / Remote">
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+            <div class="form-group">
+              <label>Work Mode</label>
+              <select id="job-work-mode" class="form-select">
+                <option value="Remote">Remote</option>
+                <option value="Hybrid">Hybrid</option>
+                <option value="On-site">On-site</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Application Source</label>
+              <input type="text" id="job-source" class="form-control" placeholder="e.g. LinkedIn / Referral">
+            </div>
+            <div class="form-group">
+              <label>Application Date</label>
+              <input type="date" id="job-date" class="form-control" required>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+            <div class="form-group">
+              <label>Resume version used</label>
+              <input type="text" id="job-resume" class="form-control" placeholder="e.g. v2.1">
+            </div>
+            <div class="form-group">
+              <label>Portfolio Link</label>
+              <input type="url" id="job-portfolio" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Referral Name</label>
+              <input type="text" id="job-referral" class="form-control" placeholder="e.g. John SDE">
+            </div>
+          </div>
+          
+          <div style="border-top:1px solid var(--border-light); margin-top:10px; padding-top:12px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+            <div class="form-group">
+              <label>Recruiter Name</label>
+              <input type="text" id="job-hr-name" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Recruiter Email</label>
+              <input type="email" id="job-hr-email" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Recruiter LinkedIn</label>
+              <input type="url" id="job-linkedin" class="form-control">
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+            <div class="form-group">
+              <label>Application Status</label>
+              <select id="job-status" class="form-select">
+                <option value="Wishlist">Wishlist</option>
+                <option value="Preparing">Preparing</option>
+                <option value="Applied">Applied</option>
+                <option value="Assessment">Assessment</option>
+                <option value="OA">OA</option>
+                <option value="HR Round">HR Round</option>
+                <option value="Technical Round 1">Technical Round 1</option>
+                <option value="Technical Round 2">Technical Round 2</option>
+                <option value="Manager Round">Manager Round</option>
+                <option value="Final Round">Final Round</option>
+                <option value="Offer Received">Offer Received</option>
+                <option value="Selected">Selected</option>
+                <option value="Rejected">Rejected</option>
+                <option value="Withdrawn">Withdrawn</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Priority</label>
+              <select id="job-priority" class="form-select">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Next Interview Date</label>
+              <input type="date" id="job-interview-date" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Notes & Links</label>
+            <textarea id="job-notes" class="form-control" style="min-height:50px;"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-job-editor')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Application</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Resume Editor Modal -->
+  <div class="modal-overlay" id="modal-resume-editor">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modal-resume-title">Add Resume Version</h4>
+        <button class="modal-close" onclick="App.closeModal('modal-resume-editor')"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="resume-editor-form">
+        <div class="modal-body">
+          <input type="hidden" id="resume-id">
+          <div class="form-group">
+            <label>Resume File Name</label>
+            <input type="text" id="resume-name" class="form-control" placeholder="e.g. Jitendra_Dhamdhere_Backend_v2" required>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div class="form-group">
+              <label>Version Tag</label>
+              <input type="text" id="resume-version" class="form-control" placeholder="e.g. v2.1" required>
+            </div>
+            <div class="form-group">
+              <label>ATS Rating Score</label>
+              <input type="number" id="resume-ats" class="form-control" min="0" max="100" placeholder="e.g. 85" required>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div class="form-group">
+              <label>Target Role Profile</label>
+              <input type="text" id="resume-target-role" class="form-control" placeholder="e.g. Senior Java SDE" required>
+            </div>
+            <div class="form-group">
+              <label>Target Company Focus</label>
+              <input type="text" id="resume-target-company" class="form-control" placeholder="e.g. Fintech / SaaS">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Version Modifications Changelog</label>
+            <textarea id="resume-notes" class="form-control" style="min-height:60px;"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-resume-editor')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Resume</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Certification Editor Modal -->
+  <div class="modal-overlay" id="modal-cert-editor">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modal-cert-title">Add Certification</h4>
+        <button class="modal-close" onclick="App.closeModal('modal-cert-editor')"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="cert-editor-form">
+        <div class="modal-body">
+          <input type="hidden" id="cert-id">
+          <div class="form-group">
+            <label>Certification Name</label>
+            <input type="text" id="cert-name" class="form-control" required>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div class="form-group">
+              <label>Provider / Authority</label>
+              <input type="text" id="cert-provider" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Credential ID</label>
+              <input type="text" id="cert-cred-id" class="form-control">
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div class="form-group">
+              <label>Issue Date</label>
+              <input type="date" id="cert-issue" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Expiry Date (leave blank if none)</label>
+              <input type="date" id="cert-expiry" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Credential Verification URL Link</label>
+            <input type="url" id="cert-link" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Skills Tested (comma separated)</label>
+            <input type="text" id="cert-skills" class="form-control" placeholder="e.g. Java, Multi-Threading" required>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <div class="form-group">
+              <label>Status</label>
+              <select id="cert-status" class="form-select">
+                <option value="Active">Active</option>
+                <option value="Expired">Expired</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0;"></div>
+          </div>
+          <div class="form-group">
+            <label>Notes</label>
+            <textarea id="cert-notes" class="form-control" style="min-height:50px;"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="App.closeModal('modal-cert-editor')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Certificate</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  
+
+  <!-- Toast Notification Wrapper -->
+  <div id="toast-wrapper"></div>
+
+
+  <script src="js/data-service.js?v=3"></script>
+  
+  <!-- Core Services -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js?v=3"></script>
+  <script src="js/storage.js?v=3"></script>
+  <script src="js/utils.js?v=3"></script>
+  <script src="js/app.js?v=3"></script>
+  
+  <script src="js/dashboard.js?v=3"></script>
+  <script src="js/study.js?v=3"></script>
+  <script src="js/notes.js?v=3"></script>
+  <script src="js/tasks.js?v=3"></script>
+  <script src="js/roadmap.js?v=3"></script>
+  <script src="js/tracker.js?v=3"></script>
+  <script src="js/projects.js?v=3"></script>
+  <script src="js/interviews.js?v=3"></script>
+  <script src="js/jobs.js?v=3"></script>
+  <script src="js/analytics.js?v=3"></script>
+  <script src="js/routine.js?v=3"></script>
+  <script src="js/settings.js?v=3"></script>
+
+</body>
+</html>

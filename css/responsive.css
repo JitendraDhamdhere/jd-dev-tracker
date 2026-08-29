@@ -1,0 +1,259 @@
+/* Responsive CSS - Media queries for tablets and mobile devices */
+
+/* Tablet & Smaller Laptops (1024px and below) */
+@media screen and (max-width: 1024px) {
+  :root {
+    --sidebar-width: 240px;
+  }
+  
+  .charts-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .dashboard-layout-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+/* Mobile & Tablet Portrait (768px and below) */
+@media screen and (max-width: 768px) {
+  #sidebar {
+    position: fixed;
+    top: 0;
+    left: calc(-1 * var(--sidebar-width));
+    height: 100vh;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.4);
+    z-index: 999;
+  }
+  
+  /* Sidebar Open State */
+  body.sidebar-open #sidebar {
+    left: 0;
+  }
+  
+  /* Sidebar Overlay when open */
+  body.sidebar-open::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 998;
+  }
+  
+  .menu-toggle {
+    display: block;
+    margin-right: 12px;
+  }
+  
+  #header {
+    padding: 0 16px;
+  }
+  
+  .search-container {
+    display: none; /* Hide global header search on mobile, can access via toggle */
+  }
+  
+  .view-panel {
+    padding: 20px 16px;
+  }
+  
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Tiny Mobile Screens (480px and below) */
+@media screen and (max-width: 480px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .page-title {
+    font-size: 18px;
+  }
+  
+  .header-actions {
+    gap: 8px;
+  }
+  
+  .header-btn {
+    width: 34px;
+    height: 34px;
+  }
+  
+  .panel-footer {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+  
+  /* Modal responsive resizing */
+  .modal-container {
+    width: 95%;
+    max-height: 90vh;
+  }
+  
+  .modal-body {
+    padding: 16px;
+  }
+  
+  .modal-footer {
+    padding: 12px 16px;
+  }
+}
+
+/* --- COMPREHENSIVE RESPONSIVENESS OVERRIDES --- */
+
+/* Touch Target Sizes & General Mobile Layout Improvements */
+@media screen and (max-width: 768px) {
+  /* Increase hit targets for comfortable tapping */
+  .btn {
+    min-height: 44px;
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+  
+  .form-control, .form-select {
+    height: 44px !important;
+    font-size: 14px;
+  }
+  
+  .sidebar-link {
+    padding: 14px 20px !important;
+  }
+  
+  .pomo-tab {
+    padding: 12px 16px !important;
+  }
+
+  /* Prevent page horizontal overflow */
+  .view-panel {
+    overflow-x: hidden !important;
+  }
+
+  /* Header Title adjustment for small viewports */
+  .page-title {
+    font-size: 16px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+  }
+  
+  .header-left {
+    align-items: center;
+  }
+
+  /* Study Panel pomodoro and logs stack */
+  #view-study .dashboard-layout-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+  }
+
+  /* Daily Planner inline grids stack */
+  #view-daily-planner [style*="grid-template-columns"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  /* Modal body form grids stack */
+  .modal-body [style*="grid-template-columns"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  /* Notes editor panel stack layout */
+  body .notes-container-layout {
+    flex-direction: column !important;
+    height: auto !important;
+  }
+  
+  body .notes-sidebar-pane {
+    width: 100% !important;
+    height: auto !important;
+  }
+  
+  body .notes-sidebar-list {
+    max-height: 200px !important;
+  }
+  
+  body .notes-editor-pane {
+    width: 100% !important;
+    height: 520px !important;
+  }
+
+  /* Kanban board scrolling */
+  .kanban-board {
+    max-width: 100%;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 16px;
+  }
+
+  .kanban-column {
+    min-width: 280px !important;
+    max-height: 70vh !important;
+  }
+
+  .kanban-task-list {
+    max-height: 55vh !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Calendar horizontal scrolling */
+  body .calendar-container {
+    width: 100%;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  body .calendar-weekdays,
+  body .calendar-grid {
+    min-width: 600px !important;
+  }
+
+  /* Study Logs dynamic hover overrides (force actions buttons visible on touch) */
+  body .session-actions-wrapper {
+    opacity: 1 !important;
+    position: static !important;
+    margin-top: 12px !important;
+    justify-content: flex-end !important;
+  }
+}
+
+/* Tiny Mobile Viewports (<= 480px) */
+@media screen and (max-width: 480px) {
+  /* Resumes and lists card layouts */
+  .login-card {
+    padding: 30px 20px !important;
+    margin: 10px !important;
+    max-width: 95% !important;
+  }
+  
+  .login-header h2 {
+    font-size: 22px !important;
+  }
+
+  .modal-container {
+    width: 95% !important;
+    margin: 10px !important;
+    max-height: 92vh !important;
+  }
+}
+
+/* Small Mobile & Dashboards (640px and below) */
+@media screen and (max-width: 640px) {
+  #view-dashboard [style*="grid-template-columns: repeat(4"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+

@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+.next/
+out/
+build/
+*.tsbuildinfo
+
+# Debug/test scripts added during development
+check-logs.js
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+
+# Env files (if any added later — never commit real keys)
+.env
+.env.local
+.env.*.local
+
+# Antigravity/agent workspace artifacts (if any appear)
+.antigravity/
+screenshot.png
