@@ -139,6 +139,11 @@ textarea.form-control {
   resize: vertical;
 }
 
+.form-select option {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
 /* Badges & Status Tags */
 .badge {
   display: inline-flex;

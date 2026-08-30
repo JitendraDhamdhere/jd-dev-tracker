@@ -90,7 +90,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }}
               className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${isActive
                 ? "bg-brand-primary text-white shadow-glow"
-                : "text-text-secondary hover:text-text-primary hover:bg-white/5"
+                : "text-text-secondary hover:text-text-primary hover:bg-bg-tertiary"
                 }`}
             >
               <div className="flex items-center gap-3">
@@ -98,7 +98,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <span>{item.label}</span>
               </div>
               {item.badge && (
-                <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 font-bold">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-bg-tertiary text-text-secondary font-bold">
                   {item.badge}
                 </span>
               )}
@@ -115,16 +115,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {isOpen && (
         <div
           onClick={onClose}
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"
         />
       )}
 
       <aside
-        className={`fixed top-0 left-0 bottom-0 z-50 w-[260px] bg-bg-sidebar border-r border-white/10 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed top-0 left-0 bottom-0 z-50 w-[260px] bg-bg-sidebar border-r border-border-ui flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"
           }`}
       >
         {/* Brand Header */}
-        <div className="h-[70px] px-6 border-b border-white/5 flex items-center justify-between">
+        <div className="h-[70px] px-6 border-b border-border-ui flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-brand-primary/20 border border-brand-primary/30 flex items-center justify-center text-brand-primary shadow-glow">
               <Terminal size={20} />
@@ -155,7 +155,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {renderNavGroup(mainItems)}
           </div>
 
-          <div className="h-px bg-white/5 mx-2" />
+          <div className="h-px bg-border-ui mx-2" />
 
           <div>
             <div className="text-[11px] font-bold uppercase tracking-wider text-text-muted px-3 mb-2">
@@ -164,7 +164,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {renderNavGroup(trackerItems)}
           </div>
 
-          <div className="h-px bg-white/5 mx-2" />
+          <div className="h-px bg-border-ui mx-2" />
 
           <div>
             <div className="text-[11px] font-bold uppercase tracking-wider text-text-muted px-3 mb-2">
@@ -175,10 +175,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </nav>
 
         {/* User Profile Footer */}
-        <div className="p-4 border-t border-white/5 bg-black/20">
+        <div className="p-4 border-t border-border-ui bg-bg-tertiary/40">
           <button
             onClick={() => onSelectTab("settings")}
-            className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-colors text-left"
+            className="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-bg-tertiary transition-colors text-left"
           >
             <div className="w-10 h-10 rounded-xl bg-brand-primary font-heading font-bold text-white flex items-center justify-center text-sm shadow-md">
               {profile.avatar || "JD"}

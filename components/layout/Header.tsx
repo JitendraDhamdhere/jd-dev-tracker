@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Menu, Search, Sun, Moon, Clock, RefreshCw } from "lucide-react";
 import { Profile } from "@/lib/types";
 
@@ -25,10 +25,26 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [isLight, setIsLight] = useState(false);
 
+  useEffect(() => {
+    const saved = localStorage.getItem("devtrack_theme");
+    if (saved === "light") {
+      setIsLight(true);
+      document.documentElement.setAttribute("data-theme", "light");
+    } else if (saved === "dark") {
+      setIsLight(false);
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      const current = document.documentElement.getAttribute("data-theme");
+      setIsLight(current === "light");
+    }
+  }, []);
+
   const toggleTheme = () => {
     const next = !isLight;
     setIsLight(next);
-    document.documentElement.setAttribute("data-theme", next ? "light" : "dark");
+    const themeStr = next ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", themeStr);
+    localStorage.setItem("devtrack_theme", themeStr);
   };
 
   const formatTabTitle = (tab: string) => {
@@ -57,12 +73,12 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-30 h-[70px] bg-bg-primary/80 backdrop-blur-md border-b border-white/5 px-4 lg:px-8 flex items-center justify-between">
+    <header className="sticky top-0 z-30 h-[70px] bg-bg-primary/80 backdrop-blur-md border-b border-border-ui px-4 lg:px-8 flex items-center justify-between">
       {/* Left Title & Mobile Toggle */}
       <div className="flex items-center gap-3">
         <button
           onClick={onOpenSidebar}
-          className="p-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-white/5 lg:hidden"
+          className="p-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-tertiary lg:hidden transition-colors"
           title="Open Menu"
         >
           <Menu size={20} />
@@ -90,14 +106,14 @@ export const Header: React.FC<HeaderProps> = ({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search notes, tasks, jobs..."
-            className="w-full bg-bg-secondary/90 border border-white/10 rounded-xl pl-9 pr-3 py-1.5 text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all"
+            className="w-full bg-bg-secondary border border-border-ui rounded-xl pl-9 pr-3 py-1.5 text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all"
           />
         </div>
 
         {/* Sync / Refresh */}
         <button
           onClick={onRefresh}
-          className="p-2.5 rounded-xl text-text-secondary hover:text-brand-primary hover:bg-white/5 border border-white/5 transition-all"
+          className="p-2.5 rounded-xl text-text-secondary hover:text-brand-primary hover:bg-bg-tertiary border border-border-ui transition-all"
           title="Sync with Supabase"
         >
           <RefreshCw size={17} />
@@ -106,7 +122,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Quick Pomodoro Launch */}
         <button
           onClick={onQuickTimer}
-          className="p-2.5 rounded-xl text-text-secondary hover:text-brand-primary hover:bg-white/5 border border-white/5 transition-all"
+          className="p-2.5 rounded-xl text-text-secondary hover:text-brand-primary hover:bg-bg-tertiary border border-border-ui transition-all"
           title="Quick Study Timer"
         >
           <Clock size={17} />
@@ -115,14 +131,14 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Theme Switcher */}
         <button
           onClick={toggleTheme}
-          className="p-2.5 rounded-xl text-text-secondary hover:text-status-warning hover:bg-white/5 border border-white/5 transition-all"
-          title="Toggle Theme"
+          className="p-2.5 rounded-xl text-text-secondary hover:text-status-warning hover:bg-bg-tertiary border border-border-ui transition-all"
+          title={isLight ? "Switch to Dark Mode" : "Switch to Light Mode"}
         >
           {isLight ? <Moon size={17} /> : <Sun size={17} />}
         </button>
 
         {/* User Pill */}
-        <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-white/10">
+        <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-border-ui">
           <div className="w-8 h-8 rounded-lg bg-brand-primary font-heading font-bold text-white text-xs flex items-center justify-center shadow-sm">
             {profile.avatar || "JD"}
           </div>

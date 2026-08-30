@@ -3,6 +3,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
 :root {
+  color-scheme: dark;
+
   /* Font Families */
   --font-heading: 'Outfit', 'Inter', sans-serif;
   --font-body: 'Inter', sans-serif;
@@ -50,10 +52,12 @@
 
 /* Light Theme Variables */
 [data-theme="light"] {
+  color-scheme: light;
+
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
   --bg-tertiary: #f1f5f9;
-  --bg-sidebar: #0f172a; /* Keep sidebar dark for professional visual hierarchy */
+  --bg-sidebar: #ffffff; /* Modern crisp white sidebar in light mode */
   
   --border-color: rgba(0, 0, 0, 0.08);
   --border-light: rgba(0, 0, 0, 0.04);
@@ -95,6 +99,44 @@ a {
 
 button, input, textarea, select {
   font-family: inherit;
+  color: var(--text-primary);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="file"]),
+textarea,
+select {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+select option {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Chrome autofill dark mode flash fix */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill {
+  -webkit-text-fill-color: var(--text-primary) !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--bg-tertiary) inset !important;
+  box-shadow: 0 0 0 1000px var(--bg-tertiary) inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Date / Time calendar picker icon */
+::-webkit-calendar-picker-indicator {
+  filter: invert(0.85);
+  cursor: pointer;
+}
+[data-theme="light"] ::-webkit-calendar-picker-indicator {
+  filter: none;
+  cursor: pointer;
 }
 
 /* Scrollbars */
@@ -143,7 +185,7 @@ button, input, textarea, select {
   align-items: center;
   padding: 0 24px;
   gap: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .sidebar-logo {
@@ -176,7 +218,7 @@ button, input, textarea, select {
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
-  color: #94a3b8;
+  color: var(--text-secondary);
   gap: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -190,7 +232,7 @@ button, input, textarea, select {
 }
 
 .sidebar-link:hover {
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: var(--bg-tertiary);
   color: var(--text-primary);
 }
 
@@ -208,11 +250,11 @@ button, input, textarea, select {
 /* User Profile Widget inside Sidebar Footer */
 .sidebar-footer {
   padding: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   gap: 12px;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: var(--bg-tertiary);
 }
 
 .profile-avatar {

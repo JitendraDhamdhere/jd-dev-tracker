@@ -20,6 +20,11 @@ const config: Config = {
           secondary: "var(--text-secondary)",
           muted: "var(--text-muted)",
         },
+        border: {
+          ui: "var(--border-ui)",
+          subtle: "var(--border-color)",
+          light: "var(--border-light)",
+        },
         brand: {
           primary: "var(--primary)",
           hover: "var(--primary-hover)",
