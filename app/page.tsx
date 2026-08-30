@@ -59,7 +59,7 @@ import { LoginPage } from "@/components/auth/LoginPage";
 
 export default function Home() {
   const { showToast } = useToast();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [currentTab, setCurrentTab] = useState<string>("dashboard");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -405,14 +405,6 @@ export default function Home() {
       }),
     ]);
   };
-
-  if (isAuthenticated === null) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-bg-primary">
-        <div className="w-8 h-8 border-2 border-brand-primary/30 border-t-brand-primary rounded-full animate-spin" />
-      </div>
-    );
-  }
 
   if (!isAuthenticated) {
     return <LoginPage onLoginSuccess={() => setIsAuthenticated(true)} />;

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description:
     "Production-quality developer study, daily routine, and career advancement operating system built with Next.js, React, and Supabase.",
   icons: {
-    icon: "/assets/icons/favicon.png",
+    icon: "/favicon.svg",
   },
 };
 

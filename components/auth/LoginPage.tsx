@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { Terminal, Lock, User, Eye, EyeOff, ArrowRight, AlertCircle, Sun, Moon, ShieldCheck, KeyRound } from "lucide-react";
-import confetti from "canvas-confetti";
 import { playChime } from "@/lib/audio";
 
 interface LoginPageProps {
@@ -20,13 +19,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
   const [isLight, setIsLight] = useState(false);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("devtrack_theme");
-    if (savedTheme === "light") {
-      setIsLight(true);
-      document.documentElement.setAttribute("data-theme", "light");
-    } else {
-      setIsLight(false);
-      document.documentElement.setAttribute("data-theme", "dark");
+    if (typeof window !== "undefined") {
+      const savedTheme = localStorage.getItem("devtrack_theme");
+      if (savedTheme === "light") {
+        setIsLight(true);
+        document.documentElement.setAttribute("data-theme", "light");
+      } else {
+        setIsLight(false);
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
     }
   }, []);
 
@@ -34,14 +35,31 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     const next = !isLight;
     setIsLight(next);
     const themeStr = next ? "light" : "dark";
-    document.documentElement.setAttribute("data-theme", themeStr);
-    localStorage.setItem("devtrack_theme", themeStr);
+    if (typeof window !== "undefined") {
+      document.documentElement.setAttribute("data-theme", themeStr);
+      localStorage.setItem("devtrack_theme", themeStr);
+    }
   };
 
   const handleFillDemo = () => {
     setUsername("Jitu");
     setPassword("6462");
     setError(null);
+  };
+
+  const triggerConfetti = async () => {
+    if (typeof window !== "undefined") {
+      try {
+        const confetti = (await import("canvas-confetti")).default;
+        confetti({
+          particleCount: 60,
+          spread: 60,
+          origin: { y: 0.7 },
+        });
+      } catch {
+        // safe fallback
+      }
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -69,30 +87,24 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
       if (isValidUser && isValidPass) {
         // Success
         playChime("complete");
-        try {
-          confetti({
-            particleCount: 50,
-            spread: 60,
-            origin: { y: 0.7 },
-          });
-        } catch {
-          // ignore if canvas blocked
-        }
+        triggerConfetti();
 
-        if (rememberMe) {
-          localStorage.setItem("devtrack_logged_in", "true");
+        if (typeof window !== "undefined") {
+          if (rememberMe) {
+            localStorage.setItem("devtrack_logged_in", "true");
+          }
+          sessionStorage.setItem("devtrack_logged_in", "true");
         }
-        sessionStorage.setItem("devtrack_logged_in", "true");
 
         onLoginSuccess();
       } else {
         // Failed
         playChime("warning");
-        setError("Invalid username or password. Please check your credentials.");
+        setError("Invalid credentials. Demo: Username 'Jitu' / Password '6462'");
         triggerShake();
         setIsSubmitting(false);
       }
-    }, 400);
+    }, 350);
   };
 
   const triggerShake = () => {
