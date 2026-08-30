@@ -332,34 +332,56 @@ export default function Home() {
   };
 
   const handleDataReset = async () => {
-    setProfile(defaultProfile);
+    const cleanProfile = { ...defaultProfile, studyStreak: 0, createdAt: new Date().toISOString() };
+    setProfile(cleanProfile);
     setStudySessions([]);
     setRoutine({ [formatDateKey()]: defaultRoutineTemplate });
     setHabits(defaultHabits);
     setHabitHistory({});
-    setNotes(defaultNotes);
-    setTasks(defaultTasks);
+    setNotes([]);
+    setTasks([]);
     setRoadmapNodes(defaultRoadmapNodes);
     setTrackers(defaultTrackers);
-    setProjects(defaultProjects);
-    setInterviews(defaultInterviews);
-    setJobs(defaultJobs);
-    setCertifications(defaultCertifications);
+    setProjects([]);
+    setInterviews([]);
+    setJobs([]);
+    setCertifications([]);
+
+    if (typeof window !== "undefined") {
+      Object.keys(localStorage).forEach((k) => {
+        if (k.startsWith("devtrack_")) {
+          localStorage.removeItem(k);
+        }
+      });
+    }
 
     await Promise.all([
-      DataService.set("profile", defaultProfile),
+      DataService.set("profile", cleanProfile),
       DataService.set("study_sessions", []),
       DataService.set("daily_routine", { [formatDateKey()]: defaultRoutineTemplate }),
       DataService.set("habits_list", defaultHabits),
       DataService.set("habits", {}),
-      DataService.set("notes", defaultNotes),
-      DataService.set("tasks", defaultTasks),
+      DataService.set("notes", []),
+      DataService.set("tasks", []),
       DataService.set("roadmap_nodes", defaultRoadmapNodes),
       DataService.set("trackers", defaultTrackers),
-      DataService.set("projects", defaultProjects),
-      DataService.set("interviews", defaultInterviews),
-      DataService.set("jobs", defaultJobs),
-      DataService.set("certifications", defaultCertifications),
+      DataService.set("projects", []),
+      DataService.set("interviews", []),
+      DataService.set("jobs", []),
+      DataService.set("certifications", []),
+      DataService.set("job_applications_v2", []),
+      DataService.set("resumes_v2", []),
+      DataService.set("resumes", []),
+      DataService.set("daily_planner", {
+        [formatDateKey()]: {
+          morningGoals: "",
+          todayGoals: "",
+          wins: "",
+          mistakes: "",
+          improvements: "",
+          date: formatDateKey(),
+        },
+      }),
     ]);
   };
 
