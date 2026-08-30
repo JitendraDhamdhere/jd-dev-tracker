@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Menu, Search, Sun, Moon, Clock, RefreshCw } from "lucide-react";
+import { Menu, Search, Sun, Moon, Clock, RefreshCw, LogOut } from "lucide-react";
 import { Profile } from "@/lib/types";
 
 interface HeaderProps {
@@ -12,6 +12,7 @@ interface HeaderProps {
   profile: Profile;
   searchQuery: string;
   onSearchChange: (q: string) => void;
+  onLogout?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -22,6 +23,7 @@ export const Header: React.FC<HeaderProps> = ({
   profile,
   searchQuery,
   onSearchChange,
+  onLogout,
 }) => {
   const [isLight, setIsLight] = useState(false);
 
@@ -137,11 +139,20 @@ export const Header: React.FC<HeaderProps> = ({
           {isLight ? <Moon size={17} /> : <Sun size={17} />}
         </button>
 
-        {/* User Pill */}
+        {/* User Pill & Logout */}
         <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-border-ui">
           <div className="w-8 h-8 rounded-lg bg-brand-primary font-heading font-bold text-white text-xs flex items-center justify-center shadow-sm">
             {profile.avatar || "JD"}
           </div>
+          {onLogout && (
+            <button
+              onClick={onLogout}
+              className="p-2 rounded-xl text-text-muted hover:text-status-danger hover:bg-bg-tertiary border border-border-ui transition-all"
+              title="Sign Out"
+            >
+              <LogOut size={16} />
+            </button>
+          )}
         </div>
       </div>
     </header>
